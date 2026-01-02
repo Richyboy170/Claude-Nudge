@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Claude Code Nudge Scheduler - Automatically schedule nudge messages to keep your Claude Code session active">
+    <title>Claude Nudge Scheduler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Animated Background -->
+        <div class="animated-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <h1>Claude Nudge</h1>
+                </div>
+                <p class="tagline">Keep your Claude Code session alive with automated nudges</p>
+            </header>
+
+            <!-- Timer Display -->
+            <section class="timer-section">
+                <div class="timer-card glass-card">
+                    <div class="status-indicator" id="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text" id="status-text">Inactive</span>
+                    </div>
+                    
+                    <div class="countdown-display">
+                        <div class="time-segment">
+                            <span class="time-value" id="hours">00</span>
+                            <span class="time-label">Hours</span>
+                        </div>
+                        <span class="time-separator">:</span>
+                        <div class="time-segment">
+                            <span class="time-value" id="minutes">00</span>
+                            <span class="time-label">Minutes</span>
+                        </div>
+                        <span class="time-separator">:</span>
+                        <div class="time-segment">
+                            <span class="time-value" id="seconds">00</span>
+                            <span class="time-label">Seconds</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" viewBox="0 0 200 200">
+                            <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
+                            <circle class="progress-ring-fill" id="progress-ring" cx="100" cy="100" r="90"/>
+                        </svg>
+                        <div class="progress-percentage" id="progress-percentage">0%</div>
+                    </div>
+
+                    <div class="next-nudge-info">
+                        <span class="label">Next nudge at:</span>
+                        <span class="value" id="next-nudge-time">--:--:--</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-section">
+                <div class="controls-card glass-card">
+                    <h2>Schedule Settings</h2>
+                    
+                    <div class="interval-selector">
+                        <label>Nudge Interval</label>
+                        <div class="interval-inputs">
+                            <div class="input-group">
+                                <input type="number" id="interval-hours" min="0" max="23" value="5" placeholder="0">
+                                <span>hours</span>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="interval-minutes" min="0" max="59" value="0" placeholder="0">
+                                <span>mins</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-presets">
+                        <span class="presets-label">Quick presets:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-hours="1" data-minutes="0">1h</button>
+                            <button class="preset-btn" data-hours="2" data-minutes="0">2h</button>
+                            <button class="preset-btn active" data-hours="5" data-minutes="0">5h</button>
+                            <button class="preset-btn" data-hours="8" data-minutes="0">8h</button>
+                            <button class="preset-btn" data-hours="12" data-minutes="0">12h</button>
+                        </div>
+                    </div>
+
+                    <div class="nudge-message">
+                        <label>Nudge Message</label>
+                        <textarea id="nudge-message" placeholder="Enter your nudge message...">hi</textarea>
+                        <p class="hint">This message will be copied to clipboard when it's time to nudge</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="start-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5,3 19,12 5,21"/>
+                            </svg>
+                            Start Scheduler
+                        </button>
+                        <button class="btn btn-secondary" id="stop-btn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="6" y="4" width="4" height="16"/>
+                                <rect x="14" y="4" width="4" height="16"/>
+                            </svg>
+                            Stop
+                        </button>
+                    </div>
+
+                    <div class="notification-toggle">
+                        <label class="toggle-container">
+                            <input type="checkbox" id="notifications-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>Enable browser notifications</span>
+                        <button class="btn btn-ghost" id="test-notification">Test</button>
+                    </div>
+
+                    <div class="sound-toggle">
+                        <label class="toggle-container">
+                            <input type="checkbox" id="sound-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>Enable sound alerts</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Log -->
+            <section class="history-section">
+                <div class="history-card glass-card">
+                    <div class="history-header">
+                        <h2>Nudge History</h2>
+                        <button class="btn btn-ghost" id="clear-history">Clear</button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <div class="empty-history">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <p>No nudges yet. Start the scheduler to begin!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructions -->
+            <section class="instructions-section">
+                <div class="instructions-card glass-card">
+                    <h2>How to Use</h2>
+                    <div class="instruction-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Set Your Interval</h3>
+                                <p>Choose how often you want to nudge Claude Code (e.g., every 5 hours)</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Start the Scheduler</h3>
+                                <p>Click "Start Scheduler" to begin the countdown</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Get Notified</h3>
+                                <p>When time's up, you'll get a notification and the nudge message will be copied</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Paste & Send</h3>
+                                <p>Switch to Claude Code and paste (Ctrl+V) to send your nudge!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with ❤️ for Claude Code users</p>
+        </footer>
+    </div>
+
+    <!-- Notification Sound -->
+    <audio id="notification-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQEzj+Dyl4BSAyaL5v2dg0gEH4fm/qyKSwMYgeb/sI5KBBBy5v+tkEoFF2rl/62SSgUWZ+X/rJNKBhZl5f+rlEoHFmPl/6qVSwcWYeX/qZZLCBZf5f+ol0wIFl3l/6eYTAgWW+X/pplMCRZZ5f+lmk0JFlfl/6SbTQoWVeX/o5xOChZT5f+inU4LFlHl/6GeTwsWT+X/oJ9PDBZN5f+foFAMFkvl/56hUA0WSeX/naJRDRZH5f+co1EOFkXl/5ukUg4WQ+X/mqVSDxZB5f+ZplMPFj/l/5inUxAWPeX/l6hUEBY75f+WqVQRFjnl/5WqVREWN+X/lKtWEhY15f+TrFYSFjPl/5KtVxMWMeX/kq5XExYv5f+Rr1gUFi3l/5CwWBQWK+X/j7FZFRYp5f+OslkVFifl/42zWhYWJeX/jLRaFhYj5f+LtVsXFiHl/4q2WxcWH+X/ibdcGBYd5f+IuFwYFhvl/4e5XRkWGeX/hrpeGRYX5f+Fu14aFhXl/4S8XxoWE+X/g71fGxYR5f+Cvl8bFg/l/4G/YBwWDeX/gMBgHBYL5f9/wWEdFgnl/37CYR0WB+X/fcNiHhYF5f98xGIeFgPl/3vFYx8WAeX/esZjHxb/5P95x2QgFv3k/3jIZCAW++T/d8llIRb55P92ymUhFvfk/3XLZiIW9eT/dMxmIhbz5P9zzWcjFvHk/3LOZyMW7+T/cc9oJBbt5P9w0GgkFuvk/2/RaSUW6eT/btJpJRbn5P9t02omFuXk/2zUaicW4+T/a9VqJxbh5P9q1msoFt/k/2nXaysW3eT/aNhrKRbb5P9n2WsqFtnk/2baaioW1+T/ZdtrKxbV5P9k3GwrFtPk/2PdbCwW0eT/Yt5tLhbP5P9h320uFs3k/2DgbS8Wy+T/X+FuLxbJ5P9e4m4wFsfk/13jbzAWxeT/XORvMRbD5P9b5XAxFsHk/1rmcDIWv+T/WedxMxa95P9Y6HEzFrvk/1fpcjQWueT/Vup0NBa35P9V63Q1FrXk/1TsdTUWs+T/U+11NhsX" type="audio/wav">
+    </audio>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+name: Claude Nudge Scheduler
+
+on:
+  # Run every 5 hours
+  schedule:
+    - cron: '0 */5 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  nudge:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send Nudge to Claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "🚀 Sending nudge to Claude API..."
+          
+          RESPONSE=$(curl -s -X POST https://api.anthropic.com/v1/messages \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d '{
+              "model": "claude-sonnet-4-20250514",
+              "max_tokens": 50,
+              "messages": [{"role": "user", "content": "hi"}]
+            }')
+          
+          echo "✅ Nudge sent!"
+          echo "Response: $RESPONSE" | head -c 200
