@@ -13,21 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Send Nudge to Claude
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          echo "🚀 Sending nudge to Claude API..."
-          
-          RESPONSE=$(curl -s -X POST https://api.anthropic.com/v1/messages \
-            -H "Content-Type: application/json" \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            -d '{
-              "model": "claude-sonnet-4-20250514",
-              "max_tokens": 50,
-              "messages": [{"role": "user", "content": "hi"}]
-            }')
-          
-          echo "✅ Nudge sent!"
-          echo "Response: $RESPONSE" | head -c 200
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Create .env from secret
+        run: echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" > .env
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Send Nudge
+        run: node nudge.js
