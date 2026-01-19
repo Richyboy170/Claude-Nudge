@@ -25,6 +25,11 @@ async function nudge() {
         console.log(`✅ Nudge sent! Claude replied: "${reply}"`);
     } catch (error) {
         console.error(`❌ Error: ${error.message}`);
+        console.error(`   Status: ${error.status || 'N/A'}`);
+        console.error(`   Type: ${error.type || 'N/A'}`);
+        if (error.error) {
+            console.error(`   Details: ${JSON.stringify(error.error)}`);
+        }
         process.exit(1);
     }
 }
